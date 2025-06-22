@@ -15,7 +15,7 @@ app.use(morgan("dev")); // Logging middleware
 app.use(cors()); // middleware allows cross-origin requests
 
 // Routes
-app.use("/auhors", authorRoutes);
+app.use("/authors", authorRoutes);
 app.use("/books", bookRoutes);
 app.use("/cats", catsRoutes);
 

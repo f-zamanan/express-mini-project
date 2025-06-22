@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import Author from "../models/Author";
+import Book from "../models/Book";
 
 // implementing all CRUD methods for AuthorController
 
@@ -31,8 +32,11 @@ const authorByID = async (req: Request, res: Response, next: NextFunction) => {
 // create a new author
 const creatAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { name, country, bookId } = req.body;
-    const newAuth = await Author.create({ name, country, books: bookId });
+    const { name, country, bookID } = req.body;
+    const newAuth = await Author.create({ name, country, books: bookID });
+    const book = await Book.findByIdAndUpdate(bookID, {
+      $push: { posts: newAuth._id },
+    });
     res.json(newAuth);
   } catch (error) {
     next(error);

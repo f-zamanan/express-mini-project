@@ -8,6 +8,7 @@ import {
 } from "../controllers/AuthorController";
 
 const router = express.Router();
+
 //1. get all authors route
 router.get("/", getAllAuhtors);
 //2. get author by id

@@ -1,5 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import Book from "../models/Book";
+import Author from "../models/Author";
+import Category from "../models/Category";
 
 // implementing all CRUD methods for AuthorController
 
@@ -17,7 +19,9 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
 const bookrByID = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookID } = req.params;
-    const foundBook = await Book.findById(bookID).populate("author category");
+    const foundBook = await Book.findById(bookID).populate(
+      "author category - books"
+    );
     res.json(foundBook);
   } catch (error) {
     next(error);
@@ -27,8 +31,18 @@ const bookrByID = async (req: Request, res: Response, next: NextFunction) => {
 // create a new book
 const creatBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, authID, bookID } = req.body;
-    const newBook = await Book.create({ title, auhtor: authID, books: bookID });
+    const { title, authID, catID } = req.body;
+    const newBook = await Book.create({
+      title,
+      author: authID,
+      category: catID,
+    });
+    const author = await Author.findByIdAndUpdate(authID, {
+      $push: { posts: newBook._id },
+    });
+    const categories = await Category.findByIdAndUpdate(catID, {
+      $push: { posts: newBook._id },
+    });
     res.json(newBook);
   } catch (error) {
     next(error);
