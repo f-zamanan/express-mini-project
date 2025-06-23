@@ -11,7 +11,7 @@ const getAllAuhtors = async (
   next: NextFunction
 ) => {
   try {
-    const allAuhtors = await Author.find().populate("books");
+    const allAuhtors = await Author.find().populate("books", "title-_id");
     res.json(allAuhtors);
   } catch (error) {
     next(error);
@@ -35,7 +35,7 @@ const creatAuth = async (req: Request, res: Response, next: NextFunction) => {
     const { name, country, bookID } = req.body;
     const newAuth = await Author.create({ name, country, books: bookID });
     const book = await Book.findByIdAndUpdate(bookID, {
-      $push: { posts: newAuth._id },
+      $push: { author: newAuth._id },
     });
     res.json(newAuth);
   } catch (error) {
@@ -48,8 +48,13 @@ const updateAuth = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { authID } = req.params;
     const { name } = req.body;
-    const updatedAuth = await Author.findByIdAndUpdate(authID, name);
-    res.json(updatedAuth);
+    const updatedAuth = await Author.findByIdAndUpdate(authID, { name });
+    // res.json(updatedAuth);
+    res.status(200).json({
+      status: "Success",
+      message: "Author is updated",
+      updatedAuth,
+    });
   } catch (error) {
     next(error);
   }

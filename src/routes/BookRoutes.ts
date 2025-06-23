@@ -12,12 +12,12 @@ const router = express.Router();
 // 1. get all books route
 router.get("/", getAllBooks);
 // 2. get book by id
-router.get("/:id", bookrByID);
+router.get("/:bookID", bookrByID);
 // 3. create book
 router.post("/", creatBook);
 // 4. update book name by id
-router.put("/:id", updateBook);
+router.put("/:bookID", updateBook);
 // 5. delete book by id
-router.delete("/:id", deleteBook);
+router.delete("/:bookID", deleteBook);
 
 export default router;

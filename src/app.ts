@@ -6,6 +6,7 @@ import cors from "cors";
 import authorRoutes from "./routes/AuthorRoutes";
 import bookRoutes from "./routes/BookRoutes";
 import catsRoutes from "./routes/CateRoutes";
+import path from "path";
 
 const app = express();
 const PORT = 8000;
@@ -17,6 +18,7 @@ app.use(cors()); // middleware allows cross-origin requests
 // Routes
 app.use("/authors", authorRoutes);
 app.use("/books", bookRoutes);
+app.use("./src/uploads", express.static(path.join(__dirname, "uploads")));
 app.use("/cats", catsRoutes);
 
 app.use(notFound);

@@ -8,7 +8,10 @@ import Category from "../models/Category";
 // get all books
 const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const allBook = await Book.find().populate("author category");
+    const allBook = await Book.find()
+      .populate({ path: "author", select: "name-_id" })
+      .populate({ path: "category", select: "name-_id" });
+    // ("author category");
     res.json(allBook);
   } catch (error) {
     next(error);
@@ -19,9 +22,7 @@ const getAllBooks = async (req: Request, res: Response, next: NextFunction) => {
 const bookrByID = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookID } = req.params;
-    const foundBook = await Book.findById(bookID).populate(
-      "author category - books"
-    );
+    const foundBook = await Book.findById(bookID).populate("author category");
     res.json(foundBook);
   } catch (error) {
     next(error);
@@ -31,19 +32,29 @@ const bookrByID = async (req: Request, res: Response, next: NextFunction) => {
 // create a new book
 const creatBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { title, authID, catID } = req.body;
+    const { title, authID, catID, image } = req.body;
+    // uploading image using multer, image is not required
+    let imagePath;
+    if (req.file) {
+      imagePath = req.file?.path;
+    }
     const newBook = await Book.create({
       title,
       author: authID,
       category: catID,
+      image: imagePath,
     });
     const author = await Author.findByIdAndUpdate(authID, {
-      $push: { posts: newBook._id },
+      $push: { books: newBook._id },
     });
     const categories = await Category.findByIdAndUpdate(catID, {
-      $push: { posts: newBook._id },
+      $push: { books: newBook._id },
     });
-    res.json(newBook);
+    res.status(201).json({
+      status: "Success",
+      message: "New book is created successfully.",
+      newBook,
+    });
   } catch (error) {
     next(error);
   }
@@ -54,7 +65,7 @@ const updateBook = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { bookID } = req.params;
     const { title } = req.body;
-    const updatedBook = await Book.findByIdAndUpdate(bookID, title);
+    const updatedBook = await Book.findByIdAndUpdate(bookID, { title });
     res.json(updatedBook);
   } catch (error) {
     next(error);
